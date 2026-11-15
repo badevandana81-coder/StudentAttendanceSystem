@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attendance
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: attendance
+  template:
+    metadata:
+      labels:
+        app: attendance
+    spec:
+      containers:
+        - name: attendance
+          image: attendance-system:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DB_URL
+              value: jdbc:h2:mem:attendance;DB_CLOSE_DELAY=-1
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 10
